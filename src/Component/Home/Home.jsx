@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Gallery from '../Gallery/Gallery';
+
 import image1 from '../../assets/images/image-1.webp'
 import image2 from '../../assets/images/image-2.webp'
 import image3 from '../../assets/images/image-3.webp'
@@ -20,6 +20,7 @@ import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 
 
+
 const Home = () => {
   const [images, setImages] = useState([
     // Sample image data with id, src, and alt
@@ -36,14 +37,13 @@ const Home = () => {
     { id: 11, src: image11, alt: "Image 3" },
     // Add more images as needed
   ]);
-
+const [selectedImages, setSelectedImages] = useState([]);
 
   // handel drag end 
   const handleDragEnd = (result) => {
     if (!result.destination) {
       return;
     }
-
     const reorderedImages = Array.from(images);
     const [reorderedImage] = reorderedImages.splice(result.source.index, 1);
     reorderedImages.splice(result.destination.index, 0, reorderedImage);
@@ -52,39 +52,77 @@ const Home = () => {
   };
 
 
+  // handle image selection
+
+  const handleImageSelection = (imageId) => {
+    setSelectedImages((prevSelectedImages) => {
+      if (prevSelectedImages.includes(imageId)) {
+        // Deselect the image
+        return prevSelectedImages.filter((id) => id !== imageId);
+      } else {
+        // Select the image
+        return [...prevSelectedImages, imageId];
+      }
+    });
+  };
+
+  // now delete the selected image
+  const deleteSelectedImages = () => {
+    const updatedImages = images.filter(
+      (image) => !selectedImages.includes(image.id)
+    );
+    setImages(updatedImages);
+    setSelectedImages([]); // Clear the selected images
+  };
+  // handle unselected images
+
+  const handleUnselectedImages=() => {
+     setSelectedImages([]); // Clear the selected images
+  } 
+
+
   
   return (
     <>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="main container mx-auto my-10 bg-blue-200 p-2">
+        <div className="main overflow-hidden container mx-auto my-10 bg-blue-200 p-2">
           <div className="main-gallery">
             {/* gallery heading */}
             <div className="gallery-head flex justify-between h-[60px] items-center border-b px-10 bg-white rounded-md">
               <div className="">
                 <div className="form-control">
                   <label className="cursor-pointer label">
-                    <input type="checkbox" name="" id="" className="w-5 h-5" />
+                    <input
+                      type="checkbox"
+                     checked={selectedImages.length>0 ? true :false}
+                      name=""
+                      id=""
+                      className="w-5 h-5"
+                      onChange={handleUnselectedImages}
+                    />
                     <span className="label-text ml-3 text-2xl font-bold capitalize">
-                      {" "}
-                      3 file selected
+                      {selectedImages.length}
+                      file selected Magic gallery
                     </span>
                   </label>
                 </div>
               </div>
 
-              <div className="delete text-2xl font-bold text-red-500 capitalize  cursor-pointer">
-                delete
+              <div
+                className="delete text-2xl font-bold text-red-500 capitalize cursor-pointer"
+                onClick={deleteSelectedImages}
+              >
+                Delete
               </div>
             </div>
             {/* gallery image container*/}
 
-           
             <Droppable droppableId="image-gallery" direction="horizontal">
               {(provided) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className="grid bg-white p-3 md:p-10 gallery grid-cols-5 md:gap-10 container gap-3 mx-auto"
+                  className="grid bg-white p-3 md:p-10 gallery grid-cols-5 md:gap-10 container gap-2 mx-auto"
                 >
                   {images.map((image, index) => (
                     <Draggable
@@ -97,17 +135,23 @@ const Home = () => {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          className="g1 border rounded-md"
+                          className={`g1 border rounded-md ${
+                            selectedImages.includes(image.id)
+                              ? " border-red-600"
+                              : ""
+                          }`}
                         >
                           {/* image card */}
                           <img src={image.src} alt={image.alt} />
-                          <input className="z-40" type="text" name="" id="" />
+
                           <div className="g-overly"></div>
                           <input
                             type="checkbox"
-                            name=""
-                            id=""
-                            className="w-5 h-5 absolute top-3 left-3 p-5"
+                            name={image.id}
+                            id={image.id}
+                            className="md:w-5 md:h-5 absolute md:top-3 md:left-3 p-5 top-1"
+                            checked={selectedImages.includes(image.id)}
+                            onChange={() => handleImageSelection(image.id)}
                           />
                         </div>
                       )}
