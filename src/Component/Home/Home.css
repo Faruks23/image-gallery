@@ -22,3 +22,9 @@
 .g1:hover .g-overly{
   opacity: 1; /* Show the overlay on hover */
 }
+
+.gallery div:first-child{
+   grid-column: auto / span 2;
+  grid-row: auto / span 2;
+  cursor:grab;
+}

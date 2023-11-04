@@ -12,8 +12,14 @@ import image9 from '../../assets/images/image-9.webp'
 import image10 from '../../assets/images/image-10.jpeg'
 import image11 from '../../assets/images/image-11.jpeg'
 
-
 import './Home.css'
+
+
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+
+
+
+
 const Home = () => {
   const [images, setImages] = useState([
     // Sample image data with id, src, and alt
@@ -31,89 +37,88 @@ const Home = () => {
     // Add more images as needed
   ]);
 
-  //  <div className="container mx-auto py-4 ">
-  //    <h1 className="text-3xl font-bold mb-4">Image Gallery</h1>
-  //    {/* <Gallery images={images} setImages={setImages} /> */}
-  //  </div>;
 
-  // Function to determine background color based on index
+  // handel drag end 
+  const handleDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const reorderedImages = Array.from(images);
+    const [reorderedImage] = reorderedImages.splice(result.source.index, 1);
+    reorderedImages.splice(result.destination.index, 0, reorderedImage);
+
+    setImages(reorderedImages);
+  };
+
+
   
   return (
     <>
-      <div className="main container mx-auto my-10 bg-blue-200 p-2">
-        <div className="main-gallery">
-          <div className="gallery-head flex justify-between h-[60px] items-center border-b px-10 bg-white rounded-md">
-            <div className="">
-              <div className="form-control">
-                <label className="cursor-pointer label">
-                  <input
-                    type="checkbox"
-                    checked="checked"
-                    className="checkbox checkbox-info bg-blue-500"
-                  />
-                  <span className="label-text ml-3 text-2xl font-bold capitalize"> 3 file select</span>
-                </label>
-              </div>{" "}
-            </div>
-            <div className="delete text-2xl font-bold text-red-500 capitalize  cursor-pointer">delete</div>
-          </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="main container mx-auto my-10 bg-blue-200 p-2">
+          <div className="main-gallery">
+            {/* gallery heading */}
+            <div className="gallery-head flex justify-between h-[60px] items-center border-b px-10 bg-white rounded-md">
+              <div className="">
+                <div className="form-control">
+                  <label className="cursor-pointer label">
+                    <input type="checkbox" name="" id="" className="w-5 h-5" />
+                    <span className="label-text ml-3 text-2xl font-bold capitalize">
+                      {" "}
+                      3 file selected
+                    </span>
+                  </label>
+                </div>
+              </div>
 
-          <div className="grid bg-white p-3  md:p-10 gallery grid-cols-5 md:gap-10 container gap-3 mx-auto  ">
-            <div
-              draggable
-              className="g1  col-span-2 row-span-2 border  bg-black rounded-md"
-            >
-              <img src={images[0]?.src} alt="" />
-              <div className="g-overly"></div>
+              <div className="delete text-2xl font-bold text-red-500 capitalize  cursor-pointer">
+                delete
+              </div>
             </div>
-            <div className="g1  rounded-md border">
-              <img src={images[1]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1   border rounded-md">
-              <img src={images[2]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1   rounded-md border">
-              <img src={images[3]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1  rounded-md border">
-              <img src={images[4]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1  rounded-md border">
-              <img src={images[5]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1   rounded-md border">
-              <img src={images[6]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1   border rounded-md">
-              <img src={images[7]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1  border rounded-md">
-              <img src={images[8]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1  border rounded-md">
-              <img src={images[9]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1   border rounded-md">
-              <img src={images[10]?.src} alt="" />
-              <div className="g-overly"></div>
-            </div>
-            <div className="g1    border rounded-md">
-              <img src={images[11]?.src} alt="" />
-              <input className=" z-40" type="text" name="" id="" />
-              <div className="g-overly"></div>
-            </div>
+            {/* gallery image container*/}
+
+           
+            <Droppable droppableId="image-gallery" direction="horizontal">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className="grid bg-white p-3 md:p-10 gallery grid-cols-5 md:gap-10 container gap-3 mx-auto"
+                >
+                  {images.map((image, index) => (
+                    <Draggable
+                      key={image.id}
+                      draggableId={image.id.toString()}
+                      index={index}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className="g1 border rounded-md"
+                        >
+                          {/* image card */}
+                          <img src={image.src} alt={image.alt} />
+                          <input className="z-40" type="text" name="" id="" />
+                          <div className="g-overly"></div>
+                          <input
+                            type="checkbox"
+                            name=""
+                            id=""
+                            className="w-5 h-5 absolute top-3 left-3 p-5"
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                </div>
+              )}
+            </Droppable>
           </div>
         </div>
-      </div>
+      </DragDropContext>
     </>
   );
 };
