@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 import image1 from '../../assets/images/image-1.webp'
 import image2 from '../../assets/images/image-2.webp'
@@ -11,33 +12,34 @@ import image8 from '../../assets/images/image-8.webp'
 import image9 from '../../assets/images/image-9.webp'
 import image10 from '../../assets/images/image-10.jpeg'
 import image11 from '../../assets/images/image-11.jpeg'
+import addImage from '../../assets/images/gallery (1).png'
 
-import './Home.css'
-
-
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import './ImageGallery.css'
 
 
+const ImageGallery = () => {
+
+  // selected images stat
+  const [selectedImages, setSelectedImages] = useState([]);
 
 
-
-const Home = () => {
+  // image data state
   const [images, setImages] = useState([
     // Sample image data with id, src, and alt
-    { id: 1, src: image1 },
+    { id: 1, src: image1, alt:"Image 1" },
     { id: 2, src: image2, alt: "Image 2" },
     { id: 3, src: image3, alt: "Image 3" },
-    { id: 4, src: image4, alt: "Image 3" },
-    { id: 5, src: image5, alt: "Image 3" },
-    { id: 6, src: image6, alt: "Image 3" },
-    { id: 7, src: image7, alt: "Image 3" },
-    { id: 8, src: image8, alt: "Image 3" },
-    { id: 9, src: image9, alt: "Image 3" },
-    { id: 10, src: image10, alt: "Image 3" },
-    { id: 11, src: image11, alt: "Image 3" },
-    // Add more images as needed
+    { id: 4, src: image4, alt: "Image 4" },
+    { id: 5, src: image5, alt: "Image 5" },
+    { id: 6, src: image6, alt: "Image 6" },
+    { id: 7, src: image7, alt: "Image 7" },
+    { id: 8, src: image8, alt: "Image 8" },
+    { id: 9, src: image9, alt: "Image 9" },
+    { id: 10, src: image10, alt: "Image 10" },
+    { id: 11, src: image11, alt: "Image 11" },
+    
   ]);
-const [selectedImages, setSelectedImages] = useState([]);
+
 
   // handel drag end 
   const handleDragEnd = (result) => {
@@ -47,13 +49,11 @@ const [selectedImages, setSelectedImages] = useState([]);
     const reorderedImages = Array.from(images);
     const [reorderedImage] = reorderedImages.splice(result.source.index, 1);
     reorderedImages.splice(result.destination.index, 0, reorderedImage);
-
     setImages(reorderedImages);
   };
 
 
   // handle image selection
-
   const handleImageSelection = (imageId) => {
     setSelectedImages((prevSelectedImages) => {
       if (prevSelectedImages.includes(imageId)) {
@@ -84,39 +84,52 @@ const [selectedImages, setSelectedImages] = useState([]);
   
   return (
     <>
+      {/* dargDrop context */}
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="main overflow-hidden container mx-auto my-10 bg-blue-200 p-2">
+        <div className="main overflow-hidden container mx-auto py-10 bg-blue-200 p-2">
           <div className="main-gallery">
-            {/* gallery heading */}
+            {/* gallery heading start --> */}
             <div className="gallery-head flex justify-between h-[60px] items-center border-b px-10 bg-white rounded-md">
               <div className="">
                 <div className="form-control">
                   <label className="cursor-pointer label">
-                    <input
-                      type="checkbox"
-                     checked={selectedImages.length>0 ? true :false}
-                      name=""
-                      id=""
-                      className="w-5 h-5"
-                      onChange={handleUnselectedImages}
-                    />
+                    {selectedImages.length > 0 && (
+                      <>
+                        <input
+                          type="checkbox"
+                          checked={selectedImages.length > 0 ? true : false}
+                          name=""
+                          id=""
+                          className="w-5 h-5"
+                          onChange={handleUnselectedImages}
+                        />
+                      </>
+                    )}
                     <span className="label-text ml-3 text-2xl font-bold capitalize">
-                      {selectedImages.length}
-                      file selected Magic gallery
+                      {selectedImages.length > 0 ? (
+                        <>{selectedImages.length} File selected</>
+                      ) : (
+                        "gallery"
+                      )}
                     </span>
                   </label>
                 </div>
               </div>
 
-              <div
-                className="delete text-2xl font-bold text-red-500 capitalize cursor-pointer"
-                onClick={deleteSelectedImages}
-              >
-                Delete
-              </div>
+              {selectedImages.length > 0 && (
+                <>
+                  <div
+                    className="delete text-2xl font-bold text-red-500 capitalize cursor-pointer"
+                    onClick={deleteSelectedImages}
+                  >
+                    Delete
+                  </div>
+                </>
+              )}
             </div>
-            {/* gallery image container*/}
+            {/* gallery heading close >--- */}
 
+            {/* gallery image container start --->*/}
             <Droppable droppableId="image-gallery" direction="horizontal">
               {(provided) => (
                 <div
@@ -136,9 +149,7 @@ const [selectedImages, setSelectedImages] = useState([]);
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
                           className={`g1 border rounded-md ${
-                            selectedImages.includes(image.id)
-                              ? " border-red-600"
-                              : ""
+                            selectedImages.includes(image.id) ? "selected" : ""
                           }`}
                         >
                           {/* image card */}
@@ -149,7 +160,9 @@ const [selectedImages, setSelectedImages] = useState([]);
                             type="checkbox"
                             name={image.id}
                             id={image.id}
-                            className="md:w-5 md:h-5 absolute md:top-3 md:left-3 p-5 top-1"
+                            className={`md:w-5 checkInput md:h-5 absolute md:top-3 md:left-3 p-5 top-1 opacity-0 ${
+                              selectedImages.includes(image.id) && "opacity-100"
+                            }   duration-300`}
                             checked={selectedImages.includes(image.id)}
                             onChange={() => handleImageSelection(image.id)}
                           />
@@ -157,9 +170,27 @@ const [selectedImages, setSelectedImages] = useState([]);
                       )}
                     </Draggable>
                   ))}
+                  <div className="flex  g1 flex-col border-2 border-dashed hover:cursor-pointer rounded-md justify-center items-center relative">
+                    <img
+                      src={addImage}
+                      alt="Icon"
+                      className="md:w-[30px] w-[20px] h-[20px] md:h-[30px] "
+                    />
+                    <p className="text-sm text-center md:mt-4  font-serif">
+                      Add Image
+                    </p>
+                    <input
+                      className="hidden"
+                      type="file"
+                      id="file-input"
+                      accept="image/*"
+                    />
+                    <div className="g-overly"></div>
+                  </div>
                 </div>
               )}
             </Droppable>
+            {/* gallery image container close <-----*/}
           </div>
         </div>
       </DragDropContext>
@@ -167,4 +198,4 @@ const [selectedImages, setSelectedImages] = useState([]);
   );
 };
 
-export default Home;
+export default ImageGallery;

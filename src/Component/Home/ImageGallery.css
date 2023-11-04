@@ -19,8 +19,11 @@
   transition: opacity 0.3s;
 }
 
-.g1:hover .g-overly{
+.g1:hover .g-overly {
   opacity: 1; /* Show the overlay on hover */
+}
+.g1:hover .checkInput{
+opacity: 1;
 }
 
 .gallery div:first-child{
@@ -29,26 +32,11 @@
   cursor:grab;
 }
 
-/* Add this to your CSS */
-.delete-animation {
-  transition: opacity 0.3s ease; /* Define the transition for the opacity property */
-  opacity: 1; /* Initially set opacity to 1 (visible) */
-}
-
-/* Define the opacity for deleted images */
-.delete-animation.deleted {
-  opacity: 0; /* Set opacity to 0 (invisible) for deleted images */
-}
 
 
 /* Add this to your CSS */
 .selected {
   border: 2px solid red; /* Change the border style for selected images */
-}
-
-/* or */
-
-.selected {
-  background-color: rgba(255, 0, 0, 0.2); /* Add a background overlay for selected images */
+  background-color: rgba(255, 0, 0, 0.2);
 }
 
