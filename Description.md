@@ -1,5 +1,5 @@
 
-[ LIVE Link](URL)
+[ LIVE Link](https://magicgallery.netlify.app/)
 
 ## Objective:
 Created a responsive image gallery using React JS with the following features: reordering, deleting multiple images, and setting a feature image. The gallery should be visually appealing and provide a seamless user experience.
